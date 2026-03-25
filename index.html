@@ -84,20 +84,26 @@ const v1 = document.getElementById("v1");
 const v2 = document.getElementById("v2");
 const bgMusic = document.getElementById("bgMusic");
 
-// START
+// START → unlock both audio + bgm
 startBtn.onclick = async () => {
   startBtn.style.display = "none";
   message.innerText = "Listen Carefully ❤️";
 
   try {
     await audio.play();
+
+    // unlock bg music (important trick)
+    bgMusic.volume = 0;
+    await bgMusic.play();
+    bgMusic.pause();
+
   } catch {
     message.innerText = "Tap Again ❤️";
     startBtn.style.display = "block";
   }
 };
 
-// AFTER AUDIO → SHOW CHOICE
+// AFTER AUDIO → QUESTION
 audio.onended = () => {
   message.innerText = "";
   choice.style.display = "block";
@@ -122,7 +128,7 @@ function startVideos() {
   };
 }
 
-// FINAL MESSAGE
+// FINAL MESSAGE + MUSIC
 function showFinal() {
   message.innerHTML = `
     <div class="final-text">
@@ -141,6 +147,21 @@ function showFinal() {
   heartEffect();
 }
 
+// SAFE MUSIC PLAY
+function playMusic() {
+  bgMusic.currentTime = 0;
+  bgMusic.volume = 0;
+  bgMusic.play();
+
+  let v = 0;
+  let fade = setInterval(() => {
+    if (v < 0.6) {
+      v += 0.03;
+      bgMusic.volume = v;
+    } else clearInterval(fade);
+  }, 200);
+}
+
 // NO FLOW
 function sadMode() {
   choice.style.display = "none";
@@ -148,28 +169,7 @@ function sadMode() {
   cryEffect();
 }
 
-// MUSIC (SAFE PLAY)
-function playMusic() {
-  bgMusic.volume = 0;
-
-  bgMusic.play().then(() => {
-    let v = 0;
-    let fade = setInterval(() => {
-      if (v < 0.6) {
-        v += 0.03;
-        bgMusic.volume = v;
-      } else clearInterval(fade);
-    }, 200);
-  }).catch(() => {
-    message.innerHTML += "<br><br><small>Tap screen for music 🎵</small>";
-    document.body.onclick = () => {
-      bgMusic.play();
-      document.body.onclick = null;
-    };
-  });
-}
-
-// HEART EFFECT
+// HEARTS
 function heartEffect() {
   let count = 0;
   let inter = setInterval(() => {
@@ -188,7 +188,7 @@ function heartEffect() {
   },300);
 }
 
-// CRY EFFECT
+// CRY
 function cryEffect() {
   let count = 0;
   let inter = setInterval(() => {
