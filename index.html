@@ -33,9 +33,13 @@ button {
 
 #message {
   max-width: 90%;
+}
+
+.final-text {
   font-size: 20px;
-  line-height: 1.6;
-  white-space: pre-line;
+  line-height: 1.8;
+  text-align: center;
+  padding: 10px;
 }
 
 video {
@@ -81,15 +85,6 @@ const v1 = document.getElementById("v1");
 const v2 = document.getElementById("v2");
 const bgMusic = document.getElementById("bgMusic");
 
-let finalText = `I've been planning this for a while,
-just to show you how important you are to me...
-
-I wish you all the happiness in the world.
-May all your dreams come true.
-
-I love you, Humam.
-I love you a lot... 💜💙`;
-
 // START
 startBtn.onclick = async () => {
   startBtn.style.display = "none";
@@ -128,9 +123,21 @@ function startVideos() {
   };
 }
 
-// FINAL MESSAGE
+// FINAL MESSAGE (FIXED)
 function showFinal() {
-  typeText(finalText);
+  message.innerHTML = `
+    <div class="final-text">
+      I've been planning this for a while,<br><br>
+      just to show you how important you are to me...<br><br>
+
+      I wish you all the happiness in the world.<br>
+      May all your dreams come true.<br><br>
+
+      I love you, Humam.<br>
+      I love you a lot... 💜💙
+    </div>
+  `;
+
   playMusic();
   heartEffect();
 }
@@ -140,18 +147,6 @@ function sadMode() {
   choice.style.display = "none";
   message.innerText = "I'm Sad...!!! 🥺";
   cryEffect();
-}
-
-// TYPING
-function typeText(t) {
-  let i = 0;
-  message.innerText = "";
-
-  let inter = setInterval(() => {
-    message.innerText += t[i];
-    i++;
-    if (i >= t.length) clearInterval(inter);
-  }, 45);
 }
 
 // MUSIC
@@ -171,39 +166,41 @@ function playMusic() {
 // HEART EFFECT
 function heartEffect() {
   let count = 0;
-  let inter = setInterval(() => {
-    if (count > 40) return clearInterval(inter);
+
+  let interval = setInterval(() => {
+    if (count > 40) return clearInterval(interval);
 
     let h = document.createElement("div");
     h.className = "heart";
     h.innerText = "❤";
-    h.style.left = Math.random()*100 + "vw";
-    h.style.fontSize = (Math.random()*20+10)+"px";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.fontSize = (Math.random() * 20 + 10) + "px";
 
     document.body.appendChild(h);
-    setTimeout(()=>h.remove(),5000);
+    setTimeout(() => h.remove(), 5000);
 
     count++;
-  },300);
+  }, 300);
 }
 
 // CRY EFFECT
 function cryEffect() {
   let count = 0;
-  let inter = setInterval(() => {
-    if (count > 40) return clearInterval(inter);
+
+  let interval = setInterval(() => {
+    if (count > 40) return clearInterval(interval);
 
     let c = document.createElement("div");
     c.className = "cry";
     c.innerText = "😭";
-    c.style.left = Math.random()*100 + "vw";
-    c.style.fontSize = (Math.random()*25+15)+"px";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.fontSize = (Math.random() * 25 + 15) + "px";
 
     document.body.appendChild(c);
-    setTimeout(()=>c.remove(),5000);
+    setTimeout(() => c.remove(), 5000);
 
     count++;
-  },200);
+  }, 200);
 }
 </script>
 
