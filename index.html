@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Special Surprise</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #1a0000, #330000);
+  color: white;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+button {
+  padding: 14px 28px;
+  font-size: 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: #ff1a4d;
+  color: white;
+}
+
+video {
+  width: 85%;
+  border-radius: 12px;
+}
+
+#message {
+  max-width: 90%;
+  font-size: 20px;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.heart {
+  position: absolute;
+  color: #ff4d6d;
+  animation: float 5s linear infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(100vh); opacity: 1; }
+  100% { transform: translateY(-10vh); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<h1 id="message">Tap to Start ❤️</h1>
+<button id="startBtn">Start</button>
+
+<audio id="audio" src="audio.mp3" preload="auto"></audio>
+<audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
+
+<video id="video1" src="video1.mp4" style="display:none;"></video>
+<video id="video2" src="video2.mp4" style="display:none;"></video>
+
+<script>
+const startBtn = document.getElementById('startBtn');
+const audio = document.getElementById('audio');
+const bgMusic = document.getElementById('bgMusic');
+const message = document.getElementById('message');
+const video1 = document.getElementById('video1');
+const video2 = document.getElementById('video2');
+
+let text = `I've been planning this for a while,
+just to show you how important you are to me...
+
+I wish you all the happiness in the world.
+May all your dreams come true.
+
+I love you, Humam.
+I love you a lot... 💜💙`;
+
+// STEP 1 → Start audio
+startBtn.onclick = async () => {
+  startBtn.style.display = 'none';
+  message.innerText = "Loading... ❤️";
+
+  try {
+    await audio.play();
+    message.innerText = "Listen Carefully ❤️";
+  } catch {
+    message.innerText = "Tap Again ❤️";
+    startBtn.style.display = 'block';
+  }
+};
+
+// STEP 2 → Audio → Video 1
+audio.onended = () => {
+  message.innerText = "";
+  video1.style.display = 'block';
+  video1.play();
+};
+
+// STEP 3 → Video 1 → Video 2
+video1.onended = () => {
+  video1.style.display = 'none';
+  video2.style.display = 'block';
+  video2.play();
+};
+
+// STEP 4 → Video 2 → Final Message
+video2.onended = () => {
+  video2.style.display = 'none';
+  setTimeout(showFinal, 800);
+};
+
+function showFinal() {
+  typeText(text);
+  playMusic();
+  createHearts();
+}
+
+function typeText(t) {
+  let i = 0;
+  message.innerText = "";
+
+  let interval = setInterval(() => {
+    message.innerText += t.charAt(i);
+    i++;
+    if (i >= t.length) clearInterval(interval);
+  }, 45);
+}
+
+function playMusic() {
+  bgMusic.volume = 0;
+  bgMusic.play();
+
+  let v = 0;
+  let fade = setInterval(() => {
+    if (v < 0.6) {
+      v += 0.03;
+      bgMusic.volume = v;
+    } else clearInterval(fade);
+  }, 200);
+}
+
+function createHearts() {
+  let count = 0;
+
+  let interval = setInterval(() => {
+    if (count > 40) return clearInterval(interval);
+
+    let heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "❤";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 5000);
+    count++;
+  }, 300);
+}
+</script>
+
+</body>
+</html>
