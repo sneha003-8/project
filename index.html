@@ -38,7 +38,6 @@ button {
 .final-text {
   font-size: 20px;
   line-height: 1.8;
-  text-align: center;
   padding: 10px;
 }
 
@@ -98,7 +97,7 @@ startBtn.onclick = async () => {
   }
 };
 
-// AFTER AUDIO → QUESTION
+// AFTER AUDIO → SHOW CHOICE
 audio.onended = () => {
   message.innerText = "";
   choice.style.display = "block";
@@ -123,7 +122,7 @@ function startVideos() {
   };
 }
 
-// FINAL MESSAGE (FIXED)
+// FINAL MESSAGE
 function showFinal() {
   message.innerHTML = `
     <div class="final-text">
@@ -149,58 +148,63 @@ function sadMode() {
   cryEffect();
 }
 
-// MUSIC
+// MUSIC (SAFE PLAY)
 function playMusic() {
   bgMusic.volume = 0;
-  bgMusic.play();
 
-  let v = 0;
-  let fade = setInterval(() => {
-    if (v < 0.6) {
-      v += 0.03;
-      bgMusic.volume = v;
-    } else clearInterval(fade);
-  }, 200);
+  bgMusic.play().then(() => {
+    let v = 0;
+    let fade = setInterval(() => {
+      if (v < 0.6) {
+        v += 0.03;
+        bgMusic.volume = v;
+      } else clearInterval(fade);
+    }, 200);
+  }).catch(() => {
+    message.innerHTML += "<br><br><small>Tap screen for music 🎵</small>";
+    document.body.onclick = () => {
+      bgMusic.play();
+      document.body.onclick = null;
+    };
+  });
 }
 
 // HEART EFFECT
 function heartEffect() {
   let count = 0;
-
-  let interval = setInterval(() => {
-    if (count > 40) return clearInterval(interval);
+  let inter = setInterval(() => {
+    if (count > 40) return clearInterval(inter);
 
     let h = document.createElement("div");
     h.className = "heart";
     h.innerText = "❤";
-    h.style.left = Math.random() * 100 + "vw";
-    h.style.fontSize = (Math.random() * 20 + 10) + "px";
+    h.style.left = Math.random()*100 + "vw";
+    h.style.fontSize = (Math.random()*20+10)+"px";
 
     document.body.appendChild(h);
-    setTimeout(() => h.remove(), 5000);
+    setTimeout(()=>h.remove(),5000);
 
     count++;
-  }, 300);
+  },300);
 }
 
 // CRY EFFECT
 function cryEffect() {
   let count = 0;
-
-  let interval = setInterval(() => {
-    if (count > 40) return clearInterval(interval);
+  let inter = setInterval(() => {
+    if (count > 40) return clearInterval(inter);
 
     let c = document.createElement("div");
     c.className = "cry";
     c.innerText = "😭";
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.fontSize = (Math.random() * 25 + 15) + "px";
+    c.style.left = Math.random()*100 + "vw";
+    c.style.fontSize = (Math.random()*25+15)+"px";
 
     document.body.appendChild(c);
-    setTimeout(() => c.remove(), 5000);
+    setTimeout(()=>c.remove(),5000);
 
     count++;
-  }, 200);
+  },200);
 }
 </script>
 
