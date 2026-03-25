@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Special Surprise</title>
 
 <style>
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
   background: linear-gradient(to bottom, #1a0000, #330000);
   color: white;
+  font-family: Arial;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -21,19 +20,16 @@ body {
 }
 
 button {
-  padding: 14px 28px;
-  font-size: 20px;
+  padding: 12px 20px;
+  margin: 10px;
+  font-size: 18px;
+  border-radius: 10px;
   border: none;
-  border-radius: 12px;
   cursor: pointer;
-  background-color: #ff1a4d;
-  color: white;
 }
 
-video {
-  width: 85%;
-  border-radius: 12px;
-}
+.yes { background: #ff4d6d; color: white; }
+.no { background: gray; color: white; }
 
 #message {
   max-width: 90%;
@@ -42,39 +38,50 @@ video {
   white-space: pre-line;
 }
 
-.heart {
-  position: absolute;
-  color: #ff4d6d;
-  animation: float 5s linear infinite;
+video {
+  width: 85%;
+  border-radius: 10px;
 }
 
-@keyframes float {
-  0% { transform: translateY(100vh); opacity: 1; }
-  100% { transform: translateY(-10vh); opacity: 0; }
+.heart, .cry {
+  position: absolute;
+  animation: fall 5s linear;
+}
+
+@keyframes fall {
+  0% { transform: translateY(-10vh); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
 }
 </style>
 </head>
 
 <body>
 
-<h1 id="message">Tap to Start ❤️</h1>
+<h2 id="message">Tap to Start ❤️</h2>
 <button id="startBtn">Start</button>
+
+<div id="choice" style="display:none;">
+  <p>Want to Visit The Memories??? 🌹</p>
+  <button class="yes" onclick="startVideos()">Yes</button>
+  <button class="no" onclick="sadMode()">No</button>
+</div>
 
 <audio id="audio" src="audio.mp3" preload="auto"></audio>
 <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
 
-<video id="video1" src="video1.mp4" style="display:none;"></video>
-<video id="video2" src="video2.mp4" style="display:none;"></video>
+<video id="v1" src="video1.mp4" style="display:none;"></video>
+<video id="v2" src="video2.mp4" style="display:none;"></video>
 
 <script>
-const startBtn = document.getElementById('startBtn');
-const audio = document.getElementById('audio');
-const bgMusic = document.getElementById('bgMusic');
-const message = document.getElementById('message');
-const video1 = document.getElementById('video1');
-const video2 = document.getElementById('video2');
+const startBtn = document.getElementById("startBtn");
+const audio = document.getElementById("audio");
+const message = document.getElementById("message");
+const choice = document.getElementById("choice");
+const v1 = document.getElementById("v1");
+const v2 = document.getElementById("v2");
+const bgMusic = document.getElementById("bgMusic");
 
-let text = `I've been planning this for a while,
+let finalText = `I've been planning this for a while,
 just to show you how important you are to me...
 
 I wish you all the happiness in the world.
@@ -83,57 +90,71 @@ May all your dreams come true.
 I love you, Humam.
 I love you a lot... 💜💙`;
 
-// STEP 1 → Start audio
+// START
 startBtn.onclick = async () => {
-  startBtn.style.display = 'none';
-  message.innerText = "Loading... ❤️";
+  startBtn.style.display = "none";
+  message.innerText = "Listen Carefully ❤️";
 
   try {
     await audio.play();
-    message.innerText = "Listen Carefully ❤️";
   } catch {
     message.innerText = "Tap Again ❤️";
-    startBtn.style.display = 'block';
+    startBtn.style.display = "block";
   }
 };
 
-// STEP 2 → Audio → Video 1
+// AFTER AUDIO → QUESTION
 audio.onended = () => {
   message.innerText = "";
-  video1.style.display = 'block';
-  video1.play();
+  choice.style.display = "block";
 };
 
-// STEP 3 → Video 1 → Video 2
-video1.onended = () => {
-  video1.style.display = 'none';
-  video2.style.display = 'block';
-  video2.play();
-};
+// YES FLOW
+function startVideos() {
+  choice.style.display = "none";
 
-// STEP 4 → Video 2 → Final Message
-video2.onended = () => {
-  video2.style.display = 'none';
-  setTimeout(showFinal, 800);
-};
+  v1.style.display = "block";
+  v1.play();
 
-function showFinal() {
-  typeText(text);
-  playMusic();
-  createHearts();
+  v1.onended = () => {
+    v1.style.display = "none";
+    v2.style.display = "block";
+    v2.play();
+  };
+
+  v2.onended = () => {
+    v2.style.display = "none";
+    setTimeout(showFinal, 800);
+  };
 }
 
+// FINAL MESSAGE
+function showFinal() {
+  typeText(finalText);
+  playMusic();
+  heartEffect();
+}
+
+// NO FLOW
+function sadMode() {
+  choice.style.display = "none";
+  message.innerText = "I'm Sad...!!! 🥺";
+  cryEffect();
+}
+
+// TYPING
 function typeText(t) {
   let i = 0;
   message.innerText = "";
 
-  let interval = setInterval(() => {
-    message.innerText += t.charAt(i);
+  let inter = setInterval(() => {
+    message.innerText += t[i];
     i++;
-    if (i >= t.length) clearInterval(interval);
+    if (i >= t.length) clearInterval(inter);
   }, 45);
 }
 
+// MUSIC
 function playMusic() {
   bgMusic.volume = 0;
   bgMusic.play();
@@ -147,23 +168,42 @@ function playMusic() {
   }, 200);
 }
 
-function createHearts() {
+// HEART EFFECT
+function heartEffect() {
   let count = 0;
+  let inter = setInterval(() => {
+    if (count > 40) return clearInterval(inter);
 
-  let interval = setInterval(() => {
-    if (count > 40) return clearInterval(interval);
+    let h = document.createElement("div");
+    h.className = "heart";
+    h.innerText = "❤";
+    h.style.left = Math.random()*100 + "vw";
+    h.style.fontSize = (Math.random()*20+10)+"px";
 
-    let heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerText = "❤";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),5000);
 
-    document.body.appendChild(heart);
-
-    setTimeout(() => heart.remove(), 5000);
     count++;
-  }, 300);
+  },300);
+}
+
+// CRY EFFECT
+function cryEffect() {
+  let count = 0;
+  let inter = setInterval(() => {
+    if (count > 40) return clearInterval(inter);
+
+    let c = document.createElement("div");
+    c.className = "cry";
+    c.innerText = "😭";
+    c.style.left = Math.random()*100 + "vw";
+    c.style.fontSize = (Math.random()*25+15)+"px";
+
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
+
+    count++;
+  },200);
 }
 </script>
 
