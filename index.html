@@ -30,7 +30,6 @@ button {
 
 .yes { background: #ff4d6d; color: white; }
 .no { background: gray; color: white; }
-.continue { background: #ff1a4d; color: white; }
 
 #message {
   max-width: 90%;
@@ -61,7 +60,7 @@ video {
 
 <body>
 
-<h2 id="message">Listen Carefully ❤️</h2>
+<h2 id="message">Tap to Start ❤️</h2>
 <button id="startBtn">Start</button>
 
 <div id="choice" style="display:none;">
@@ -70,10 +69,8 @@ video {
   <button class="no" onclick="sadMode()">No</button>
 </div>
 
-<button id="continueBtn" class="continue" style="display:none;" onclick="showFinal()">Continue ❤️</button>
-
-<audio id="audio" src="audio.mp3"></audio>
-<audio id="bgMusic" src="music.mp3" loop></audio>
+<audio id="audio" src="audio.mp3" preload="auto"></audio>
+<audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
 
 <video id="v1" src="video1.mp4" style="display:none;"></video>
 <video id="v2" src="video2.mp4" style="display:none;"></video>
@@ -83,7 +80,6 @@ const startBtn = document.getElementById("startBtn");
 const audio = document.getElementById("audio");
 const message = document.getElementById("message");
 const choice = document.getElementById("choice");
-const continueBtn = document.getElementById("continueBtn");
 const v1 = document.getElementById("v1");
 const v2 = document.getElementById("v2");
 const bgMusic = document.getElementById("bgMusic");
@@ -91,16 +87,12 @@ const bgMusic = document.getElementById("bgMusic");
 // START
 startBtn.onclick = async () => {
   startBtn.style.display = "none";
+  message.innerText = "Listen Carefully ❤️";
 
   try {
     await audio.play();
-
-    // unlock bg music
-    bgMusic.volume = 0;
-    await bgMusic.play();
-    bgMusic.pause();
-
   } catch {
+    message.innerText = "Tap Again ❤️";
     startBtn.style.display = "block";
   }
 };
@@ -126,14 +118,12 @@ function startVideos() {
 
   v2.onended = () => {
     v2.style.display = "none";
-    continueBtn.style.display = "block";
+    setTimeout(showFinal, 800);
   };
 }
 
 // FINAL MESSAGE
 function showFinal() {
-  continueBtn.style.display = "none";
-
   message.innerHTML = `
     <div class="final-text">
       I've been planning this for a while,<br><br>
@@ -151,26 +141,32 @@ function showFinal() {
   heartEffect();
 }
 
-// MUSIC
-function playMusic() {
-  bgMusic.currentTime = 0;
-  bgMusic.volume = 0;
-  bgMusic.play();
-
-  let v = 0;
-  let fade = setInterval(() => {
-    if (v < 0.6) {
-      v += 0.03;
-      bgMusic.volume = v;
-    } else clearInterval(fade);
-  }, 200);
-}
-
 // NO FLOW
 function sadMode() {
   choice.style.display = "none";
   message.innerText = "I'm Sad...!!! 🥺";
   cryEffect();
+}
+
+// MUSIC (SAFE PLAY)
+function playMusic() {
+  bgMusic.volume = 0;
+
+  bgMusic.play().then(() => {
+    let v = 0;
+    let fade = setInterval(() => {
+      if (v < 0.6) {
+        v += 0.03;
+        bgMusic.volume = v;
+      } else clearInterval(fade);
+    }, 200);
+  }).catch(() => {
+    message.innerHTML += "<br><br><small>Tap screen for music 🎵</small>";
+    document.body.onclick = () => {
+      bgMusic.play();
+      document.body.onclick = null;
+    };
+  });
 }
 
 // HEART EFFECT
